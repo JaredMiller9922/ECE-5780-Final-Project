@@ -21,6 +21,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "motor.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -87,12 +88,19 @@ int main(void)
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
 
+	// LED_init();
+	motor_init();
+	pwm_setDutyCycle_DR1(50);
+	pwm_setDutyCycle_DR2(100);
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
+		HAL_Delay(128); // Delay 1/8 a second
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

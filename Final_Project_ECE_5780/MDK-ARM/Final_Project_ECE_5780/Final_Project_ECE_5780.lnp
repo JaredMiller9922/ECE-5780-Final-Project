@@ -1,0 +1,26 @@
+--cpu Cortex-M0
+"final_project_ece_5780\startup_stm32f072xb.o"
+"final_project_ece_5780\main.o"
+"final_project_ece_5780\stm32f0xx_it.o"
+"final_project_ece_5780\stm32f0xx_hal_msp.o"
+"final_project_ece_5780\motor.o"
+"final_project_ece_5780\stm32f0xx_hal_tim.o"
+"final_project_ece_5780\stm32f0xx_hal_tim_ex.o"
+"final_project_ece_5780\stm32f0xx_hal_rcc.o"
+"final_project_ece_5780\stm32f0xx_hal_rcc_ex.o"
+"final_project_ece_5780\stm32f0xx_hal.o"
+"final_project_ece_5780\stm32f0xx_hal_i2c.o"
+"final_project_ece_5780\stm32f0xx_hal_i2c_ex.o"
+"final_project_ece_5780\stm32f0xx_hal_gpio.o"
+"final_project_ece_5780\stm32f0xx_hal_dma.o"
+"final_project_ece_5780\stm32f0xx_hal_cortex.o"
+"final_project_ece_5780\stm32f0xx_hal_pwr.o"
+"final_project_ece_5780\stm32f0xx_hal_pwr_ex.o"
+"final_project_ece_5780\stm32f0xx_hal_flash.o"
+"final_project_ece_5780\stm32f0xx_hal_flash_ex.o"
+"final_project_ece_5780\stm32f0xx_hal_exti.o"
+"final_project_ece_5780\system_stm32f0xx.o"
+--strict --scatter "Final_Project_ECE_5780\Final_Project_ECE_5780.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Final_Project_ECE_5780.map" -o Final_Project_ECE_5780\Final_Project_ECE_5780.axf
