@@ -46,7 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+volatile char input = 'o';
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,42 +93,7 @@ int main(void)
 	motor_init();
 	Init_USART();
 	
-	/*
-	// Move forwards
-	pwm_setDutyCycle_LMTR(50);
-	pwm_setDutyCycle_RMTR(50);
-	
-	HAL_Delay(2000);
-	
-	// Stop
-	pwm_setDutyCycle_LMTR(0);
-	pwm_setDutyCycle_RMTR(0);
-	
-	HAL_Delay(2000);
-	
-	// Move backwards 
-	reverse();
-	pwm_setDutyCycle_LMTR(53);
-	pwm_setDutyCycle_RMTR(50);
-	
-	HAL_Delay(2000);
-	
-	// Stop
-	pwm_setDutyCycle_LMTR(0);
-	pwm_setDutyCycle_RMTR(0);
-	
-	// Move forwards
-	forward();
-	
-	// Rotate Right
-	HAL_Delay(2000);
-	rotate90Right();
-	
-	HAL_Delay(2000);
-	
-	// Rotate Left
-	rotate90Left();
-	*/
+
 	
   /* USER CODE END 2 */
 	char test[] = "test";
@@ -138,11 +103,58 @@ int main(void)
   {
 		// GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
 
+		//Transmit_String(test);
+		//Transmit_USART(input);
+		//HAL_Delay(1000);
+
+			
+		// Move forwards
+		pwm_setDutyCycle_LMTR(50);
+		pwm_setDutyCycle_RMTR(50);
+	
+		HAL_Delay(2000);
+		
+		Transmit_USART(input);
+		
+		// Stop
+		pwm_setDutyCycle_LMTR(0);
+		pwm_setDutyCycle_RMTR(0);
+	
+		HAL_Delay(2000);
+	
+		Transmit_USART(input);
+	
+		// Move backwards 
+		reverse();
+		pwm_setDutyCycle_LMTR(53);
+		pwm_setDutyCycle_RMTR(50);
+	
+		HAL_Delay(2000);
+	
+		Transmit_USART(input);
+	
+		// Stop
+		pwm_setDutyCycle_LMTR(0);
+		pwm_setDutyCycle_RMTR(0);
+	
+		// Move forwards
+		forward();
+	
+		// Rotate Right
+		HAL_Delay(2000);
+		
+		Transmit_USART(input);
+		
+		rotate90Right();
+	
+		HAL_Delay(2000);
+	
+		Transmit_USART(input);
+	
+		// Rotate Left
+		rotate90Left();	
+		
 		Transmit_String(test);
-
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -183,7 +195,9 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void USART3_4_IRQHandler(void){
+		input = USART3->RDR;
+}
 /* USER CODE END 4 */
 
 /**
