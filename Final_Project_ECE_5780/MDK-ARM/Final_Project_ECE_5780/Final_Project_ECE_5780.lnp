@@ -4,6 +4,7 @@
 "final_project_ece_5780\stm32f0xx_it.o"
 "final_project_ece_5780\stm32f0xx_hal_msp.o"
 "final_project_ece_5780\motor.o"
+"final_project_ece_5780\our_usart.o"
 "final_project_ece_5780\stm32f0xx_hal_tim.o"
 "final_project_ece_5780\stm32f0xx_hal_tim_ex.o"
 "final_project_ece_5780\stm32f0xx_hal_rcc.o"

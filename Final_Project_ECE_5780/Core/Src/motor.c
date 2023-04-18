@@ -38,9 +38,11 @@ void pwm_init(void) {
 	// Enable Peripheral Clock for GPIOA
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
 	
+	// Enable Peripheral Clock for GPIOB
+	RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+	
 	// ---------------------------- MTR 1 Pins ------------------------------ //	
 	// Set up a PA0, PA1 as GPIO output pins for motor direction control MT2
-  GPIOA->MODER &= 0xFFFFFFF0; // clear PA0, PA1 bits,
   GPIOA->MODER |= ((1 << 0) | (1 << 2));
   //Initialize one direction pin to high, the other low
   GPIOA->ODR |= (1 << 0);
@@ -48,11 +50,16 @@ void pwm_init(void) {
 
 	// ---------------------------- MTR 2 Pins ------------------------------ //
 	// Set up a PA4, PA5 as GPIO output pins for motor direction control MTR1
-  GPIOA->MODER &= 0xFFFFF0FF; // clear PA2, PA3 bits,
   GPIOA->MODER |= ((1 << 10) | (1 << 8));
   //Initialize one direction pin to high, the other low
   GPIOA->ODR |= (1 << 4);
   GPIOA->ODR &= ~(1 << 5);
+	
+	// --------------------------- Standby Pin --------------------------- //
+	// Set up PB2 as GPIO output pins for standy pin
+	GPIOB->MODER |= (1 << 4);
+	// Initialize pin to high
+	GPIOB->ODR |= (1 << 2);	
 	
 	// ------------------------------- TIM3 Config ----------------------- //
 	// Enable TIM3 Clock
@@ -98,23 +105,60 @@ void pwm_init(void) {
 	
 	// Enable TIM3
 	TIM3->CR1 |= TIM_CR1_CEN;
-	
-	// TODO: Remove Debug Code
-	GPIOC->ODR |= GPIO_ODR_8;
 }
 
 // Set the duty cycle of the PWM, accepts (0-100)
-void pwm_setDutyCycle_DR1(uint8_t duty) {
+void pwm_setDutyCycle_RMTR(uint8_t duty) {
+    if(duty <= 100) {
+        TIM3->CCR2 = ((uint32_t)duty*TIM3->ARR)/100;  // Use linear transform to produce CCR1 value
+        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
+    }
+}
+
+// Set the duty cycle of the PWM, accepts (0-100)
+void pwm_setDutyCycle_LMTR(uint8_t duty) {
     if(duty <= 100) {
         TIM3->CCR1 = ((uint32_t)duty*TIM3->ARR)/100;  // Use linear transform to produce CCR1 value
         // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
     }
 }
 
-// Set the duty cycle of the PWM, accepts (0-100)
-void pwm_setDutyCycle_DR2(uint8_t duty) {
-    if(duty <= 100) {
-        TIM3->CCR2 = ((uint32_t)duty*TIM3->ARR)/100;  // Use linear transform to produce CCR1 value
-        // (CCR1 == "pulse" parameter in PWM struct used by peripheral library)
-    }
+// Make the rover drive backwards
+void reverse(){
+	// Reverse the polarity of both motors
+	// ----------------- MTR 1 ------------- // 
+	GPIOA->ODR |= (1 << 1);
+  GPIOA->ODR &= ~(1 << 0);
+	
+	// ----------------- MTR 2 ------------- // 
+	GPIOA->ODR |= (1 << 5);
+  GPIOA->ODR &= ~(1 << 4);
+}
+
+// Make the rover drive forwards
+void forward(){
+	// Reverse the polarity of both motors
+	// ----------------- MTR 1 ------------- // 
+	GPIOA->ODR |= (1 << 0);
+  GPIOA->ODR &= ~(1 << 1);
+	
+	// ----------------- MTR 2 ------------- // 
+	GPIOA->ODR |= (1 << 4);
+  GPIOA->ODR &= ~(1 << 5);
+}
+
+void rotate90Left(void){
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(55);
+	HAL_Delay(1250);
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
+}
+
+void rotate90Right(void){
+	pwm_setDutyCycle_LMTR(55);
+	pwm_setDutyCycle_RMTR(0);
+	HAL_Delay(1800);
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
 }

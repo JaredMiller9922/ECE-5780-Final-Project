@@ -22,8 +22,14 @@
 void motor_init(void);
 
 // Set the duty cycle of the PWM for MTR_DRV_1, accepts (0-100)
-void pwm_setDutyCycle_DR1(uint8_t duty);
-void pwm_setDutyCycle_DR2(uint8_t duty);
+void pwm_setDutyCycle_LMTR(uint8_t duty);
+void pwm_setDutyCycle_RMTR(uint8_t duty);
+
+// These methods control the rovers direction
+void reverse(void);
+void forward(void);
+void rotate90Left(void);
+void rotate90Right(void);
 
 void LED_init(void);
 

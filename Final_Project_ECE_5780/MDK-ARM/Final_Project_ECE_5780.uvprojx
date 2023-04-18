@@ -11,7 +11,7 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pArmCC>6190000::V6.19::ARMCLANG</pArmCC>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARM_Compiler_5.06u7</pCCUsed>
+      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -414,6 +414,11 @@
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Src\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>OUR_USART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\OUR_USART.c</FilePath>
             </File>
           </Files>
         </Group>

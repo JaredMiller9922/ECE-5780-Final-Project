@@ -22,6 +22,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "motor.h"
+#include "OUR_USART.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -35,11 +36,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MoveForward (1)
-#define StopMoving  (2)
-#define TurnLeft    (3)
-#define TurnRight   (4)
-#define Turn180     (5)
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -95,93 +91,58 @@ int main(void)
 
 	// LED_init();
 	motor_init();
-	pwm_setDutyCycle_DR1(50);
-	pwm_setDutyCycle_DR2(100);
+	Init_USART();
 	
-  /*************************************************************************/
-	//State Machine setup code
-	// Flags for Ultrasonic and Flex Resistors
-	uint8_t objectOnSide = 0;   // For flex resistor
-	uint8_t objectIsClose = 0;  // For Ultrasonic
+	/*
+	// Move forwards
+	pwm_setDutyCycle_LMTR(50);
+	pwm_setDutyCycle_RMTR(50);
 	
-	// Character input from USART
-	char input = 'x';
+	HAL_Delay(2000);
 	
-	// Start in initial state
-	uint16_t state = MoveForward;
+	// Stop
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
+	
+	HAL_Delay(2000);
+	
+	// Move backwards 
+	reverse();
+	pwm_setDutyCycle_LMTR(53);
+	pwm_setDutyCycle_RMTR(50);
+	
+	HAL_Delay(2000);
+	
+	// Stop
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
+	
+	// Move forwards
+	forward();
+	
+	// Rotate Right
+	HAL_Delay(2000);
+	rotate90Right();
+	
+	HAL_Delay(2000);
+	
+	// Rotate Left
+	rotate90Left();
+	*/
+	
+  /* USER CODE END 2 */
+	char test[] = "test";
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		//GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
-		//HAL_Delay(128); // Delay 1/8 a second
+		// GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
 
-		/**********************************************************************/
-		// State machine code
-		// Check UltraSonic
-			// Send distance to USART
-			// Set Ultrasonic flag if needed
-		
-		// Check Flags and choose state accordingly
-			// Flex resistors flags
-			// Ultrasonic Flag
-		if(state == MoveForward && (objectIsClose || objectOnSide)){
-			state = StopMoving;
-		}
-		else if(state == StopMoving){
-				//Choose next state based off USART input
-			switch(input){
-				case 'f':
-					state = MoveForward;
-					input = 'x'; //Set input back to default
-					break;
-				case 'l':
-					state = TurnLeft;
-					input = 'x';
-					break;
-				case 'r':
-					state = TurnRight;
-					input = 'x';
-					break;
-				case 'b':
-					state = Turn180;
-					input = 'x';
-					break;
-				default:
-					state = StopMoving;
-			}
-		}
-		else if(state == TurnLeft){
-			state = StopMoving;
-		}
-		else if(state == TurnRight){
-			state = StopMoving;
-		}
-		else if(state == Turn180){
-			state = StopMoving;
-		}
-		else{
-			state = state;
-		}
-	
-		//Switch case for current state
-			// Do the work of each state in here
-		if(state == MoveForward){
-			//Set motors speed to what we want
-		}
-		else if(state == StopMoving){
-			//Set motorspeed to zero
-			//maybe turn off polarity
-		}
-		else if(state == TurnLeft){
-			//Turn on only the right motor for a certain amount of time
-		}
-		else if(state == TurnRight){
-			//Turn on only the left motor for a certain amount of time
-		}
-		else if(state == Turn180){
-			//Turn on only one motor for a certain amount of time
-		}
+		Transmit_String(test);
+
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
