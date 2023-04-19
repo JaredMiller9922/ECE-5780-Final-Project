@@ -1,0 +1,28 @@
+--cpu Cortex-M0
+"ultra3\startup_stm32f072xb.o"
+"ultra3\main.o"
+"ultra3\stm32f0xx_it.o"
+"ultra3\stm32f0xx_hal_msp.o"
+"ultra3\motor.o"
+"ultra3\our_usart.o"
+"ultra3\adc.o"
+"ultra3\stm32f0xx_hal_tim.o"
+"ultra3\stm32f0xx_hal_tim_ex.o"
+"ultra3\stm32f0xx_hal_rcc.o"
+"ultra3\stm32f0xx_hal_rcc_ex.o"
+"ultra3\stm32f0xx_hal.o"
+"ultra3\stm32f0xx_hal_i2c.o"
+"ultra3\stm32f0xx_hal_i2c_ex.o"
+"ultra3\stm32f0xx_hal_gpio.o"
+"ultra3\stm32f0xx_hal_dma.o"
+"ultra3\stm32f0xx_hal_cortex.o"
+"ultra3\stm32f0xx_hal_pwr.o"
+"ultra3\stm32f0xx_hal_pwr_ex.o"
+"ultra3\stm32f0xx_hal_flash.o"
+"ultra3\stm32f0xx_hal_flash_ex.o"
+"ultra3\stm32f0xx_hal_exti.o"
+"ultra3\system_stm32f0xx.o"
+--strict --scatter "Ultra3\Ultra3.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Ultra3.map" -o Ultra3\Ultra3.axf
