@@ -53,7 +53,10 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void HCSR04_Read (void);
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
+void delay(uint16_t time);
+void LED_init(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
