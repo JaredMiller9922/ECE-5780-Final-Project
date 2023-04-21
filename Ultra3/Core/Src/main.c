@@ -41,6 +41,13 @@ uint32_t Distance = 0;
 
 #define TRIG_PIN GPIO_PIN_9
 #define TRIG_PORT GPIOA
+
+#define MoveForward (1)
+#define StopMoving  (2)
+#define TurnLeft		(3)
+#define TurnRight		(4)
+#define Turn180			(5)
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -55,7 +62,7 @@ uint32_t Distance = 0;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-volatile char input = 'o';
+volatile char input = 'x';
 TIM_HandleTypeDef htim1;
 /* USER CODE END PV */
 
@@ -98,8 +105,8 @@ int main(void)
 
   /* USER CODE END SysInit */
 	
-	uint8_t left = 0;
-	uint8_t right = 0;
+	uint8_t leftADC = 0;
+	uint8_t rightADC = 0;
 	
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
@@ -113,103 +120,151 @@ int main(void)
 	Init_ADC();
 	HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1);
 
+	/******************************************************************/
+	//State Machine setup code
+	//Flags for Ultrasonic and Flex Resistors
+	uint8_t objectOnLeft = 0;		//Left Flex Resistor
+	uint8_t objectOnRight = 0;  //Right Flex Resistor
+	uint8_t objectIsClose = 0;  //For Ultrasonic
+	
+	uint16_t state = MoveForward;
 	
   /* USER CODE END 2 */
-	char test[] = "test";
-	char owo[] = "LEFT";
-	char umu[] = "RIGHT";
-  /* Infinite loop */
+	char leftWarning[] = "Object is on our left\n\r";
+	char rightWarning[] = "Object is on our right\n\r";
+	char frontWarning[] = "Object is in front\n\r";
+	
+	/* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-		
-        /* USER CODE END WHILE */
-		HCSR04_Read();
-		if(Distance > 2 && Distance <= 5){
-			GPIOC->ODR |= GPIO_ODR_6;
-			GPIOC->ODR &= ~(GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9);
-		}
-		else if(Distance > 5 && Distance <= 12){
-			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_9;
-			GPIOC->ODR &= ~(GPIO_ODR_8 | GPIO_ODR_7);
-		}
-		else if(Distance > 12 && Distance <= 20){
-			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_9;
-			GPIOC->ODR &= ~(GPIO_ODR_8);
-		}
-		else if(Distance > 20 && Distance <= 30){
-			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9;
-		}
-		else
-			GPIOC->ODR &= ~(GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9);
-		
-		HAL_Delay(200);
-		// GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
-		
-		
-		Transmit_String(test);
-		Transmit_USART(input);
-		
-		Read_ADCs(&left, &right);
-		Read_ADCs(&left, &right);
-		if(left > 185){
-			Transmit_String(owo);
-		}
-		if(right > 185){
-			Transmit_String(umu);
-		}
-		
-		HAL_Delay(1000);
 
+  while (1)
+  {	
+		//Here check ADCs and Ultrasonic to set flags
+		HCSR04_Read();
+		if(Distance <= 5){//Double check if 5cm is good enough
+			objectIsClose = 1;
+		}
+		else{
+			objectIsClose = 0;
+		}
+		
+		//Read twice to get better readings, first reading might be not good
+		Read_ADCs(&leftADC, &rightADC);
+		Read_ADCs(&leftADC, &rightADC);
+		if(leftADC > 185){
+			objectOnLeft = 1;
+		}
+		else{
+			objectOnLeft = 0;
+		}
+		if(rightADC > 185){
+			objectOnRight = 1;
+		}
+		else{
+			objectOnRight = 0;
+		}
+		
+		//Figure out which state we should be in
+		if(state == MoveForward && objectIsClose && objectOnLeft && objectOnRight){
+			state = StopMoving;
+			Transmit_String(frontWarning);
+			Transmit_String(leftWarning);
+			Transmit_String(rightWarning);
+		}
+		else if(state == MoveForward && objectOnLeft && objectOnRight){
+			state = StopMoving;
+			Transmit_String(leftWarning);
+			Transmit_String(rightWarning);
+		}
+		else if(state == MoveForward && objectIsClose){
+			//Set State to stop moving
+			state = StopMoving;
 			
-		//Move forwards
-		pwm_setDutyCycle_LMTR(50);
-		pwm_setDutyCycle_RMTR(50);
-	
-		HAL_Delay(2000);
+			//Send USART message saying stop moving because object is too
+			//close in front
+			Transmit_String(frontWarning);
+		}
+		else if(state == MoveForward && objectOnLeft){
+			//Set State to stop Moving
+			state = StopMoving;
+			
+			//Send USART message saying stop moving becasue object
+			//is close to the left of the rover
+			Transmit_String(leftWarning);
+		}
+		else if(state == MoveForward && objectOnRight){
+			//Set State to stop Moving
+			state = StopMoving;
+			
+			//Send USART message saying stop moving becasue object
+			//is close to the right of the rover
+			Transmit_String(rightWarning);
+		}
+		else if(state == StopMoving){
+			//Choose next state based off USART input
+			switch(input){
+				case 'f':
+					state = MoveForward;
+					input = 'x'; //Set input back to default
+					break;
+				case 'l':
+					state = TurnLeft;
+					input = 'x';
+					break;
+				case 'r':
+					state = TurnRight;
+					input = 'x';
+					break;
+				case 'b':
+					state = Turn180;
+					input = 'x';
+					break;
+				default:
+					state = StopMoving;
+			}
+		}
+		else if(state == TurnLeft){
+			//Finished turning left, need to stay in stop state
+			state = StopMoving;
+		}
+		else if(state == TurnRight){
+			//Finished turning right, need to stay in stop state
+			state = StopMoving;
+		}
+		else if(state == Turn180){
+			//Finished turning 180, need to stay in stop state
+			state = StopMoving;
+		}
+		else{
+			//Stay in the same state if there is no neeed to change
+			state = state;
+		}
 		
-		Transmit_USART(input);
-		
-		// Stop
-		pwm_setDutyCycle_LMTR(0);
-		pwm_setDutyCycle_RMTR(0);
-	
-		HAL_Delay(2000);
-	
-		Transmit_USART(input);
-	
-		// Move backwards 
-		reverse();
-		pwm_setDutyCycle_LMTR(53);
-		pwm_setDutyCycle_RMTR(50);
-	
-		HAL_Delay(2000);
-	
-		Transmit_USART(input);
-	
-		// Stop
-		pwm_setDutyCycle_LMTR(0);
-		pwm_setDutyCycle_RMTR(0);
-	
-		// Move forwards
-		forward();
-	
-		// Rotate Right
-		HAL_Delay(2000);
-		
-		Transmit_USART(input);
-		
-		rotate90Right();
-	
-		HAL_Delay(2000);
-	
-		Transmit_USART(input);
-	
-		// Rotate Left
-		rotate90Left();	
-		
-		Transmit_String(test);
-  }
+		//Switch based of state and do the work that needs to be done in that state
+		switch(state){
+			case MoveForward:
+				//Set motors speed to what we want
+				pwm_setDutyCycle_LMTR(50);
+				pwm_setDutyCycle_RMTR(50);
+				break;
+			case StopMoving:
+				//Turn off motors
+				pwm_setDutyCycle_LMTR(0);
+				pwm_setDutyCycle_RMTR(0);
+				break;
+			case TurnLeft:
+				//Turn right motor for a certain amount of time then stop it
+				rotate90Left();
+				break;
+			case TurnRight:
+				//Turn left motor for a certain amount of time then stop it
+				rotate90Right();
+				break;
+			case Turn180:
+				//Turn one motor on for a certain amount of time then stop
+				break;
+		}
+	}
   /* USER CODE END 3 */
 }
 
