@@ -24,6 +24,7 @@
 #include "motor.h"
 #include "OUR_USART.h"
 #include "ADC.h"
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -134,13 +135,115 @@ int main(void)
 	char rightWarning[] = "Object is on our right\n\r";
 	char frontWarning[] = "Object is in front\n\r";
 	
+	//char test[] = "test";
+	char owo[] = "LEFT";
+	char umu[] = "RIGHT";
+	
+	char buffer[5];
+	
 	/* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
   while (1)
   {	
+//				HCSR04_Read();
+//		if(Distance > 2 && Distance <= 5){
+//			GPIOC->ODR |= GPIO_ODR_6;
+//			GPIOC->ODR &= ~(GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9);
+//		}
+//		else if(Distance > 5 && Distance <= 12){
+//			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_9;
+//			GPIOC->ODR &= ~(GPIO_ODR_8 | GPIO_ODR_7);
+//		}
+//		else if(Distance > 12 && Distance <= 20){
+//			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_9;
+//			GPIOC->ODR &= ~(GPIO_ODR_8);
+//		}
+//		else if(Distance > 20 && Distance <= 30){
+//			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9;
+//		}
+//		else
+//			GPIOC->ODR &= ~(GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9);
+
+//		HAL_Delay(200);
+//		// GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
+
+
+//		Transmit_String(test);
+//		Transmit_USART(input);
+
+//		Read_ADCs(&rightADC, &leftADC);
+//		Read_ADCs(&rightADC, &leftADC);
+//		if(leftADC > 185){
+//			Transmit_String(owo);
+//		}
+//		if(rightADC > 195){
+//			Transmit_String(umu);
+//		}
+
+//		HAL_Delay(1000);
+
+
+//		//Move forwards
+//		pwm_setDutyCycle_LMTR(50);
+//		pwm_setDutyCycle_RMTR(50);
+
+//		HAL_Delay(2000);
+
+//		Transmit_USART(input);
+
+//		// Stop
+//		pwm_setDutyCycle_LMTR(0);
+//		pwm_setDutyCycle_RMTR(0);
+
+//		HAL_Delay(2000);
+
+//		Transmit_USART(input);
+
+//		// Move backwards 
+//		reverse();
+//		pwm_setDutyCycle_LMTR(53);
+//		pwm_setDutyCycle_RMTR(50);
+
+//		HAL_Delay(2000);
+
+//		Transmit_USART(input);
+
+//		// Stop
+//		pwm_setDutyCycle_LMTR(0);
+//		pwm_setDutyCycle_RMTR(0);
+
+//		// Move forwards
+//		forward();
+
+//		// Rotate Right
+//		HAL_Delay(2000);
+
+//		Transmit_USART(input);
+
+//		rotate90Right();
+
+//		HAL_Delay(2000);
+
+//		Transmit_USART(input);
+
+//		// Rotate Left
+//		rotate90Left();	
+
+//		Transmit_String(test);
+		
+		
+		
 		//Here check ADCs and Ultrasonic to set flags
 		HCSR04_Read();
+		HCSR04_Read();
+		HCSR04_Read();
+		//itoa(Distance, buffer, 10);
+		sprintf(buffer, "%d", Distance);
+		Transmit_String(buffer);
+		Transmit_USART('\r');
+		Transmit_USART('\n');
+		HAL_Delay(10);
 		if(Distance <= 5){//Double check if 5cm is good enough
 			objectIsClose = 1;
 		}
@@ -149,15 +252,17 @@ int main(void)
 		}
 		
 		//Read twice to get better readings, first reading might be not good
-		Read_ADCs(&leftADC, &rightADC);
-		Read_ADCs(&leftADC, &rightADC);
-		if(leftADC > 185){
+		//Read_ADCs(&leftADC, &rightADC);
+		//Read_ADCs(&leftADC, &rightADC);
+		Read_ADCs(&rightADC, &leftADC);
+		Read_ADCs(&rightADC, &leftADC);
+		if(leftADC > 190){
 			objectOnLeft = 1;
 		}
 		else{
 			objectOnLeft = 0;
 		}
-		if(rightADC > 185){
+		if(rightADC > 195){
 			objectOnRight = 1;
 		}
 		else{
@@ -244,8 +349,8 @@ int main(void)
 		switch(state){
 			case MoveForward:
 				//Set motors speed to what we want
-				pwm_setDutyCycle_LMTR(50);
-				pwm_setDutyCycle_RMTR(50);
+				pwm_setDutyCycle_LMTR(78);
+				pwm_setDutyCycle_RMTR(78);
 				break;
 			case StopMoving:
 				//Turn off motors
@@ -263,7 +368,11 @@ int main(void)
 			case Turn180:
 				//Turn one motor on for a certain amount of time then stop
 				break;
-		}
+				
+			}
+			
+		HAL_Delay(100);
+		
 	}
   /* USER CODE END 3 */
 }
