@@ -151,7 +151,7 @@ void forward(){
 void rotate90Left(void){
 	pwm_setDutyCycle_LMTR(0);
 	pwm_setDutyCycle_RMTR(55);
-	HAL_Delay(1250);
+	HAL_Delay(1390); //1325 on class floor
 	pwm_setDutyCycle_LMTR(0);
 	pwm_setDutyCycle_RMTR(0);
 }
@@ -159,7 +159,39 @@ void rotate90Left(void){
 void rotate90Right(void){
 	pwm_setDutyCycle_LMTR(55);
 	pwm_setDutyCycle_RMTR(0);
-	HAL_Delay(1800);
+	HAL_Delay(1400); //1370 on class floor, 1380 on mat in lab
 	pwm_setDutyCycle_LMTR(0);
 	pwm_setDutyCycle_RMTR(0);
+}
+
+void rotate45Left(void){
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(55);
+	HAL_Delay(690); //1325 on class floor
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
+}
+
+void rotate45Right(void){
+	pwm_setDutyCycle_LMTR(55);
+	pwm_setDutyCycle_RMTR(0);
+	HAL_Delay(680); //1370 on class floor, 1380 on mat in lab
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
+}
+
+void rotate180Left(void){
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(55);
+	HAL_Delay(2740); //1325 on class floor
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);
+}
+
+void rotate180Right(void){
+	pwm_setDutyCycle_LMTR(55);
+	pwm_setDutyCycle_RMTR(0);
+	HAL_Delay(2760); //1370 on class floor, 1380 on mat in lab
+	pwm_setDutyCycle_LMTR(0);
+	pwm_setDutyCycle_RMTR(0);	
 }

@@ -47,7 +47,10 @@ uint32_t Distance = 0;
 #define StopMoving  (2)
 #define TurnLeft		(3)
 #define TurnRight		(4)
-#define Turn180			(5)
+#define Turn180R		(5)
+#define Turn180L		(6)
+#define Turn45R			(7)
+#define Turn45L			(8)
 
 /* USER CODE END PTD */
 
@@ -128,7 +131,7 @@ int main(void)
 	uint8_t objectOnRight = 0;  //Right Flex Resistor
 	uint8_t objectIsClose = 0;  //For Ultrasonic
 	
-	uint16_t state = MoveForward;
+	uint16_t state = StopMoving;
 	
   /* USER CODE END 2 */
 	char leftWarning[] = "Object is on our left\n\r";
@@ -138,113 +141,27 @@ int main(void)
 	//char test[] = "test";
 	char owo[] = "LEFT";
 	char umu[] = "RIGHT";
-	
+	char uzu[] = "Swithced left";
+	char uxu[] = "swithced right";
 	char buffer[5];
 	
+	int counter = 0;
 	/* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
   while (1)
-  {	
-//				HCSR04_Read();
-//		if(Distance > 2 && Distance <= 5){
-//			GPIOC->ODR |= GPIO_ODR_6;
-//			GPIOC->ODR &= ~(GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9);
-//		}
-//		else if(Distance > 5 && Distance <= 12){
-//			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_9;
-//			GPIOC->ODR &= ~(GPIO_ODR_8 | GPIO_ODR_7);
-//		}
-//		else if(Distance > 12 && Distance <= 20){
-//			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_9;
-//			GPIOC->ODR &= ~(GPIO_ODR_8);
-//		}
-//		else if(Distance > 20 && Distance <= 30){
-//			GPIOC->ODR |= GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9;
-//		}
-//		else
-//			GPIOC->ODR &= ~(GPIO_ODR_6 | GPIO_ODR_7 | GPIO_ODR_8 | GPIO_ODR_9);
-
-//		HAL_Delay(200);
-//		// GPIOC->ODR ^= GPIO_ODR_9; // Toggle green LED
-
-
-//		Transmit_String(test);
-//		Transmit_USART(input);
-
-//		Read_ADCs(&rightADC, &leftADC);
-//		Read_ADCs(&rightADC, &leftADC);
-//		if(leftADC > 185){
-//			Transmit_String(owo);
-//		}
-//		if(rightADC > 195){
-//			Transmit_String(umu);
-//		}
-
-//		HAL_Delay(1000);
-
-
-//		//Move forwards
-//		pwm_setDutyCycle_LMTR(50);
-//		pwm_setDutyCycle_RMTR(50);
-
-//		HAL_Delay(2000);
-
-//		Transmit_USART(input);
-
-//		// Stop
-//		pwm_setDutyCycle_LMTR(0);
-//		pwm_setDutyCycle_RMTR(0);
-
-//		HAL_Delay(2000);
-
-//		Transmit_USART(input);
-
-//		// Move backwards 
-//		reverse();
-//		pwm_setDutyCycle_LMTR(53);
-//		pwm_setDutyCycle_RMTR(50);
-
-//		HAL_Delay(2000);
-
-//		Transmit_USART(input);
-
-//		// Stop
-//		pwm_setDutyCycle_LMTR(0);
-//		pwm_setDutyCycle_RMTR(0);
-
-//		// Move forwards
-//		forward();
-
-//		// Rotate Right
-//		HAL_Delay(2000);
-
-//		Transmit_USART(input);
-
-//		rotate90Right();
-
-//		HAL_Delay(2000);
-
-//		Transmit_USART(input);
-
-//		// Rotate Left
-//		rotate90Left();	
-
-//		Transmit_String(test);
-		
-		
-		
+  {			
 		//Here check ADCs and Ultrasonic to set flags
 		HCSR04_Read();
 		HCSR04_Read();
 		HCSR04_Read();
 		//itoa(Distance, buffer, 10);
-		sprintf(buffer, "%d", Distance);
+		sprintf(buffer, "%d", Distance);//counter);
 		Transmit_String(buffer);
 		Transmit_USART('\r');
 		Transmit_USART('\n');
 		HAL_Delay(10);
-		if(Distance <= 5){//Double check if 5cm is good enough
+		if(Distance <= 10){//Double check if 10cm is good enough
 			objectIsClose = 1;
 		}
 		else{
@@ -256,7 +173,7 @@ int main(void)
 		//Read_ADCs(&leftADC, &rightADC);
 		Read_ADCs(&rightADC, &leftADC);
 		Read_ADCs(&rightADC, &leftADC);
-		if(leftADC > 190){
+		if(leftADC > 195){
 			objectOnLeft = 1;
 		}
 		else{
@@ -321,7 +238,19 @@ int main(void)
 					input = 'x';
 					break;
 				case 'b':
-					state = Turn180;
+					state = Turn180R;
+					input = 'x';
+					break;
+				case 'v':
+					state = Turn180L;
+					input = 'x';
+					break;
+				case 'q':
+					state = Turn45L;
+					input = 'x';
+					break;
+				case 'w':
+					state = Turn45R;
 					input = 'x';
 					break;
 				default:
@@ -336,8 +265,17 @@ int main(void)
 			//Finished turning right, need to stay in stop state
 			state = StopMoving;
 		}
-		else if(state == Turn180){
+		else if(state == Turn180R){
 			//Finished turning 180, need to stay in stop state
+			state = StopMoving;
+		}
+		else if(state == Turn180L){
+			state = StopMoving;
+		}
+		else if(state == Turn45R){
+			state = StopMoving;
+		}
+		else if(state == Turn45L){
 			state = StopMoving;
 		}
 		else{
@@ -349,9 +287,19 @@ int main(void)
 		switch(state){
 			case MoveForward:
 				//Set motors speed to what we want
-				pwm_setDutyCycle_LMTR(78);
-				pwm_setDutyCycle_RMTR(78);
-				break;
+					//pwm_setDutyCycle_LMTR(73);
+					//pwm_setDutyCycle_RMTR(74);
+					if(counter <= 14){
+						pwm_setDutyCycle_LMTR(74);
+						pwm_setDutyCycle_RMTR(64);
+					}
+					else{
+						pwm_setDutyCycle_LMTR(64);
+						pwm_setDutyCycle_RMTR(73);
+						if(counter == 18){counter = 0;}
+					}
+					counter++;
+					break;
 			case StopMoving:
 				//Turn off motors
 				pwm_setDutyCycle_LMTR(0);
@@ -360,15 +308,29 @@ int main(void)
 			case TurnLeft:
 				//Turn right motor for a certain amount of time then stop it
 				rotate90Left();
+				counter = 0;
 				break;
 			case TurnRight:
 				//Turn left motor for a certain amount of time then stop it
 				rotate90Right();
+				counter = 0;
 				break;
-			case Turn180:
-				//Turn one motor on for a certain amount of time then stop
+			case Turn180R:
+				rotate180Right();
+				counter = 0;
 				break;
-				
+			case Turn180L:
+				rotate180Left();
+				counter = 0;
+				break;
+			case Turn45R:
+				rotate45Right();
+				counter = 0;
+				break;
+			case Turn45L:
+				rotate45Left();
+				counter = 0;
+				break;
 			}
 			
 		HAL_Delay(100);

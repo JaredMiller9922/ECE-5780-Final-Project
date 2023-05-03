@@ -31,6 +31,11 @@ void forward(void);
 void rotate90Left(void);
 void rotate90Right(void);
 
+void rotate45Left(void);
+void rotate45Right(void);
+void rotate180Left(void);
+void rotate180Right(void);
+
 void LED_init(void);
 
 /* -------------------------------------------------------------------------------------------------------------
